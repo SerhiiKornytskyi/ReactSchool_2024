@@ -14,7 +14,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npn run format:fix"
+      "pre-commit": "npn run lint"
     }
   },
   "dependencies": {
