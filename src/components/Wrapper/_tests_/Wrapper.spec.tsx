@@ -67,14 +67,23 @@ describe('Wrapper', () => {
         );
 
         const searchInput = screen.getByRole('textbox', { name: /searchInput/i });
-        fireEvent.change(searchInput, { target: { value: 'asd' } });
+        fireEvent.change(searchInput, { target: { value: 'anakin' } });
 
         const searchButton = screen.getByText('Search');
         fireEvent.click(searchButton);
         await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith('https://swapi.dev/api/people/?search=asd');
+            expect(global.fetch).toHaveBeenCalledWith('https://swapi.dev/api/people/?search=anakin');
             const [search, page] = getPageParams();
-            expect(search).toEqual('asd');
+            expect(search).toEqual('anakin');
+            expect(page).toEqual(null);
+        });
+
+        const nextPaginator = screen.getByText('NextPage');
+        fireEvent.click(nextPaginator);
+
+        await waitFor(() => {
+            const [search, page] = getPageParams();
+            expect(search).toEqual('anakin');
             expect(page).toEqual(null);
         });
     });

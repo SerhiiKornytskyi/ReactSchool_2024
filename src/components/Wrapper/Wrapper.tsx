@@ -110,13 +110,13 @@ export const Wrapper = () => {
                     onClick={goToPrevPage}
                     to={""}
                     visible={!!state.prevPage}
-                    className={"paginator-prev"}>{"<< Prev"}</StyledPaginatorItem>
+                    className={"paginator-prev"}>{"PrevPage"}</StyledPaginatorItem>
                 <span>Page: {pageCount}</span>
                 <StyledPaginatorItem
                     to={""}
                     visible={!!state.nextPage}
                     onClick={goToNextPage}
-                    className={"paginator-next"}>{"Next >>"}</StyledPaginatorItem>
+                    className={"paginator-next"}>{"NextPage"}</StyledPaginatorItem>
             </StyledPaginator> : undefined}
             <br/>
             <SearchResults
