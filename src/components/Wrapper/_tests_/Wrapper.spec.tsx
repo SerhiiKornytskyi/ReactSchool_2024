@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor  } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import { Wrapper } from '../Wrapper';
 
@@ -51,11 +51,19 @@ global.fetch = mockFetchResults as jest.Mock;
 
 describe('Wrapper', () => {
     test('Fetches results and updates URL', async () => {
-        // Render Wrapper in scope of MemoryRouter to prevent errors
+
+        const getPageParams = () => {
+            const searchParams = new URLSearchParams(window.location.search);
+            const search = searchParams.get("search");
+            const page = searchParams.get("page");
+            return [search, page];
+        }
+
+        // Render Wrapper in scope of MemoryRouter
         render(
-            <MemoryRouter>
+            <BrowserRouter>
                 <Wrapper />
-            </MemoryRouter>
+            </BrowserRouter>
         );
 
         const searchInput = screen.getByRole('textbox', { name: /searchInput/i });
@@ -65,6 +73,9 @@ describe('Wrapper', () => {
         fireEvent.click(searchButton);
         await waitFor(() => {
             expect(global.fetch).toHaveBeenCalledWith('https://swapi.dev/api/people/?search=asd');
+            const [search, page] = getPageParams();
+            expect(search).toEqual('asd');
+            expect(page).toEqual(null);
         });
     });
 
