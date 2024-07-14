@@ -1,46 +1,40 @@
-import { Component, ChangeEvent } from 'react';
+import { ChangeEvent, useState, useEffect} from 'react';
 import {StyledSearchInput} from "./styled";
 
 interface Props {
-  onTrigger: (searchTerm: string) => void;
+    onSearchTrigger: (searchTerm: string, pageNumber?: number) => Promise<void>
 }
 
-interface State {
-  searchTerm: string;
-}
+export const SearchInput = ({onSearchTrigger}: Props) => {
+  const [searchTerm, setSearchTerm] = useState("");
 
-export class SearchInput extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    this.state = {
-      searchTerm: savedSearchTerm,
-    };
-  }
+  useEffect(() => {
+      const savedSearchTerm = localStorage.getItem('searchTerm');
+      savedSearchTerm && setSearchTerm(savedSearchTerm);
+  }, []);
 
-  handleSearch = () => {
-    const { searchTerm } = this.state;
-    localStorage.setItem('searchTerm', searchTerm);
-    this.props.onTrigger(searchTerm);
+  const handleSearch = () => {
+     localStorage.setItem('searchTerm', searchTerm);
+     onSearchTrigger(searchTerm);
   };
 
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: event.target.value });
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
-  render() {
     return (
         <StyledSearchInput>
           <h1>Star Wars Character Search</h1>
           <input
+              aria-label="searchInput"
               type="text"
-              value={this.state.searchTerm}
-              onChange={this.handleInputChange}
+              value={searchTerm}
+              onChange={handleInputChange}
               placeholder="Enter character name"
           />
-          <button onClick={this.handleSearch}>Search</button>
+            <br/>
+          <button name={"searchButton"} onClick={handleSearch}>Search</button>
         </StyledSearchInput>
-    );
-  }
+    )
 }
 

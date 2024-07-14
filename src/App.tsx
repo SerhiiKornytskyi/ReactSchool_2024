@@ -1,12 +1,9 @@
 import "./App.css";
-import { Wrapper } from "./components/Wrapper";
-import {ErrorBoundary} from "./components/ErrorBoundary";
+import { Wrapper } from "./components/Wrapper/Wrapper";
 
 function App() {
   return (
-    <ErrorBoundary>
       <Wrapper />
-    </ErrorBoundary>
   );
 }
 
