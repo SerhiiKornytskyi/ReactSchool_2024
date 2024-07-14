@@ -10,9 +10,9 @@ export const StyledSearchResults = styled.div`
 `;
 
 export const StyledSearchResultCardContainer = styled.div`
-  flex: 0 0 33%;
+  flex: 0 0 46%;
   background-color: #535bf2;
-  margin: 5px 3px;
+  margin: 2%;
   height: auto;
 `
 
