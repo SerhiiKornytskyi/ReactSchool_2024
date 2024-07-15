@@ -1,6 +1,7 @@
-import {StyledResultWrapper, StyledSearchResults, StyledSearchResultCardContainer} from "./styled";
+import {StyledResultWrapper, StyledSearchResults, StyledSearchResultCardContainer, StyledResultDetail} from "./styled";
 import {SearchResult} from "../Wrapper/Wrapper";
 import {SearchResultCard} from "../SearchResultCard";
+import {Outlet} from "react-router-dom";
 
 interface Props {
     results: SearchResult[];
@@ -27,6 +28,9 @@ export const SearchResults = ({results, loading, error }: Props) => {
                         </StyledSearchResultCardContainer>
                     ))}
                 </StyledResultWrapper> : <span>Nothing found...</span> }
+                <StyledResultDetail>
+                    <Outlet />
+                </StyledResultDetail>
             </StyledSearchResults>
         );
 

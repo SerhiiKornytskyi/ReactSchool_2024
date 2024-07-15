@@ -22,4 +22,8 @@ export const StyledResultWrapper = styled.div`
   align-items: center;
 `;
 
+export const StyledResultDetail = styled.div`
+  background-color: #1c440f;
+`
+
 
