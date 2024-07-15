@@ -72,10 +72,8 @@ export const Wrapper = () => {
             setState({ ...state, searchTerm, searchResults: data.results, loading: false, nextPage: data.next, prevPage: data.previous });
             setPageCount(pageNumber || 1);
             // update current URL with search params
-            if (searchTerm) {
                 const urlSeacrhParams = pageNumber ? `?search=${searchTerm}&page=${pageNumber}` : `?search=${searchTerm}`
                 navigate(urlSeacrhParams);
-            }
         } catch (error) {
             setState({ ...state, error: (error as Error).message, loading: false, nextPage: null, prevPage: null });
         }
