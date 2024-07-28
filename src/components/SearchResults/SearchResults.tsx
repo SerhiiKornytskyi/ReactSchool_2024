@@ -1,37 +1,47 @@
-import {StyledResultWrapper, StyledSearchResults, StyledSearchResultCardContainer, StyledResultDetail} from "./styled";
-import {SearchResult} from "../Wrapper/Wrapper";
-import {SearchResultCard} from "../SearchResultCard";
-import {Outlet} from "react-router-dom";
+import {
+  StyledResultWrapper,
+  StyledSearchResults,
+  StyledSearchResultCardContainer,
+} from "./styled";
+import { SearchResult } from "../../utils/types";
+import { DarkModeContext } from "../../context";
+import { SearchResultCard } from "../SearchResultCard";
+import {useContext} from "react";
 
 interface Props {
-    results: SearchResult[];
-    loading: boolean;
-    error: string;
+  results: SearchResult[];
+  loading: boolean;
+  error: boolean;
 }
 
-export const SearchResults = ({results, loading, error }: Props) => {
+export const SearchResults = ({ results = [], loading, error }: Props) => {
 
-        if (loading) {
-            return <p>Loading...</p>;
-        }
+  const darkModeContext = useContext(DarkModeContext);
+  const { theme } = darkModeContext;
 
-        if (error) {
-            return <p>Error: {error}</p>;
-        }
 
-        return (
-            <StyledSearchResults>
-               {results.length ? <StyledResultWrapper>
-                    {results.map((result, index) => (
-                        <StyledSearchResultCardContainer>
-                            <SearchResultCard key={index} result={result} />
-                        </StyledSearchResultCardContainer>
-                    ))}
-                </StyledResultWrapper> : <span>Nothing found...</span> }
-                <StyledResultDetail>
-                    <Outlet />
-                </StyledResultDetail>
-            </StyledSearchResults>
-        );
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-}
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  return (
+    <StyledSearchResults style={{backgroundColor: theme.backgroundColor, color: theme.color}}>
+      {loading && <p>...Loading</p>}
+      {results.length ? (
+        <StyledResultWrapper>
+          {results.map((result, index) => (
+            <StyledSearchResultCardContainer key={index+result.name}>
+              <SearchResultCard result={result}   />
+            </StyledSearchResultCardContainer>
+          ))}
+        </StyledResultWrapper>
+      ) : (
+        <span>Nothing found...</span>
+      )}
+    </StyledSearchResults>
+  );
+};

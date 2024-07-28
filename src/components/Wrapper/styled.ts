@@ -1,8 +1,7 @@
 import styled from "styled-components";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const StyledWrapper = styled.div`
-  background-color: #332130FF;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -17,7 +16,6 @@ export const StyledPaginator = styled.div`
   font-size: 20px;
 `;
 
-export const StyledPaginatorItem = styled(Link)<{visible: boolean}>`
+export const StyledPaginatorItem = styled(Link)<{ visible: boolean }>`
   visibility: ${({ visible }) => (visible ? "visible" : "hidden")};
 `;
-

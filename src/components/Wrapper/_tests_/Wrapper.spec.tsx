@@ -1,108 +1,81 @@
-import { render, screen, fireEvent, waitFor  } from '@testing-library/react';
-import { MemoryRouter, BrowserRouter } from 'react-router-dom';
-import '@testing-library/jest-dom';
-import { Wrapper } from '../Wrapper';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter, BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+import { Wrapper } from "../Wrapper";
+import { Provider } from "react-redux";
+import {store} from "../../../api/store";
+import { DarkModeProvider } from "../../../context/index";
+import {mockResult} from "../../../utils/mocks"
+import {configureStore} from "@reduxjs/toolkit";
+import {peopleApi} from "../../../api/peopleSlice/peopleSlice";
 
-// mock single result
-const mockResult = {
-    name: "Luke Skywalker",
-    height: "172",
-    mass: "77",
-    hair_color: "blond",
-    skin_color: "fair",
-    eye_color: "blue",
-    birth_year: "19BBY",
-    gender: "male",
-    homeworld: "https://swapi.dev/api/planets/1/",
-    films: [
-        "https://swapi.dev/api/films/1/",
-        "https://swapi.dev/api/films/2/",
-        "https://swapi.dev/api/films/3/"
-    ],
-    species: [],
-    vehicles: [
-        "https://swapi.dev/api/vehicles/14/",
-        "https://swapi.dev/api/vehicles/30/"
-    ],
-    starships: [
-        "https://swapi.dev/api/starships/12/",
-        "https://swapi.dev/api/starships/22/"
-    ],
-    created: "2014-12-09T13:50:51.644000Z",
-    edited: "2014-12-20T21:17:56.891000Z",
-    url: "https://swapi.dev/api/people/1/"
-};
 
 // mock 10 results
 const mockResults = new Array(10).fill(mockResult);
 
-// mock the entire API result object
+const renderWithProviders = (ui: JSX.Element, { reduxState } = { reduxState: {} }) => {
+  const store = configureStore({
+    reducer: {
+      [peopleApi.reducerPath]: peopleApi.reducer,
+    },
+    preloadedState: reduxState,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(peopleApi.middleware),
+  });
+
+  return render(<Provider store={store}><DarkModeProvider>{ui}</DarkModeProvider></Provider>);
+};
+
+describe("Wrapper", () => {
+  test("Fetches results and updates URL", async () => {
+    const getPageParams = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const search = searchParams.get("search");
+      const page = searchParams.get("page");
+      return [search, page];
+    };
+
+    const preloadedState = {
+      selected: {
+        items: mockResults,
+      },
+    };
+
+    renderWithProviders(<BrowserRouter><Wrapper /></BrowserRouter>, { reduxState: preloadedState });
 
 
-// mocking fetch and it's results
-const mockFetchResults = jest.fn(() => Promise.resolve({
-    ok: true,
-    json:  () => Promise.resolve({
-        results: mockResults
-    })
-}));
+    const searchInput = screen.getByRole("textbox", { name: /searchInput/i });
+    fireEvent.change(searchInput, { target: { value: "anakin" } });
 
-global.fetch = mockFetchResults as jest.Mock;
+    const searchButton = screen.getByText("Search");
+    fireEvent.click(searchButton);
 
-describe('Wrapper', () => {
-    test('Fetches results and updates URL', async () => {
+    await waitFor(() => {
+      const nextPaginator = screen.getByText("NextPage");
+      fireEvent.click(nextPaginator);
 
-        const getPageParams = () => {
-            const searchParams = new URLSearchParams(window.location.search);
-            const search = searchParams.get("search");
-            const page = searchParams.get("page");
-            return [search, page];
-        }
-
-        // Render Wrapper in scope of MemoryRouter
-        render(
-            <BrowserRouter>
-                <Wrapper />
-            </BrowserRouter>
-        );
-
-        const searchInput = screen.getByRole('textbox', { name: /searchInput/i });
-        fireEvent.change(searchInput, { target: { value: 'anakin' } });
-
-        const searchButton = screen.getByText('Search');
-        fireEvent.click(searchButton);
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith('https://swapi.dev/api/people/?search=anakin');
-            const [search, page] = getPageParams();
-            expect(search).toEqual('anakin');
-            expect(page).toEqual(null);
-        });
-
-        const nextPaginator = screen.getByText('NextPage');
-        fireEvent.click(nextPaginator);
-
-        await waitFor(() => {
-            const [search, page] = getPageParams();
-            expect(search).toEqual('anakin');
-            expect(page).toEqual(null);
-        });
+      const [search, page] = getPageParams();
+      expect(search).toEqual("anakin");
+      expect(page).toEqual(null);
     });
+  });
 
+  test("Checks Loading Indicator", async () => {
+    const preloadedState = {
+      selected: {
+        items: mockResults,
+      },
+    };
 
-    test('Checks Loading Indicator', async () => {
-        render(
-            <MemoryRouter>
-                <Wrapper />
-            </MemoryRouter>
-        );
-        const searchInput = screen.getByRole('textbox', { name: /searchInput/i });
-        fireEvent.change(searchInput, { target: { value: 'an' } });
+    renderWithProviders(<BrowserRouter><Wrapper /></BrowserRouter>, { reduxState: preloadedState });
+    const searchInput = screen.getByRole("textbox", { name: /searchInput/i });
+    fireEvent.change(searchInput, { target: { value: "an" } });
 
-        const searchButton = screen.getByRole('button', { name: /search/i });
-        fireEvent.click(searchButton);
+    const searchButton = screen.getByRole("button", { name: /search/i });
+    fireEvent.click(searchButton);
 
-        const loadingIndicator = screen.getByText("Loading...");
+    const loadingIndicator = screen.getByText("Loading...");
 
-        expect(loadingIndicator).toBeInTheDocument();
-    })
+    expect(loadingIndicator).toBeInTheDocument();
+  });
 });

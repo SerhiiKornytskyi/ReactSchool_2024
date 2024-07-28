@@ -14,7 +14,7 @@ export const StyledSearchResultCardContainer = styled.div`
   background-color: #535bf2;
   margin: 2%;
   height: auto;
-`
+`;
 
 export const StyledResultWrapper = styled.div`
   display: flex;
@@ -24,6 +24,4 @@ export const StyledResultWrapper = styled.div`
 
 export const StyledResultDetail = styled.div`
   background-color: #1c440f;
-`
-
-
+`;

@@ -1,27 +1,25 @@
-import {fireEvent, render, screen} from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { SearchInput } from '../SearchInput';
+import { fireEvent, render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { SearchInput } from "../SearchInput";
 
+describe("SearchInput", () => {
+  const mockCallback = jest.fn();
 
+  beforeEach(() => {
+    render(<SearchInput onSearchTrigger={mockCallback} />);
 
-describe('SearchInput', () => {
-    const mockCallback = jest.fn();
+    const searchInput = screen.getByRole("textbox", { name: /searchInput/i });
+    fireEvent.change(searchInput, { target: { value: "anakin" } });
 
-    beforeEach(() => {
-        render(<SearchInput onSearchTrigger={mockCallback}  />);
+    const searchButton = screen.getByText("Search");
+    fireEvent.click(searchButton);
+  });
 
-        const searchInput = screen.getByRole('textbox', { name: /searchInput/i });
-        fireEvent.change(searchInput, { target: { value: 'anakin' } });
+  test("Fires callback with given search term", () => {
+    expect(mockCallback).toBeCalledWith("anakin");
+  });
 
-        const searchButton = screen.getByText('Search');
-        fireEvent.click(searchButton);
-    });
-
-    test('Fires callback with given search term', () => {
-        expect(mockCallback).toBeCalledWith("anakin");
-    });
-
-    test('Saves Search Term to Local Storage', () => {
-        expect(window.localStorage.getItem("searchTerm")).toEqual("anakin");
-    });
+  test("Saves Search Term to Local Storage", () => {
+    expect(window.localStorage.getItem("searchTerm")).toEqual("anakin");
+  });
 });

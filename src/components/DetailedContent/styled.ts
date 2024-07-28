@@ -1,4 +1,3 @@
 import styled from "styled-components";
 
-export const StyledDetailedContent = styled.div`
-`;
+export const StyledDetailedContent = styled.div``;
